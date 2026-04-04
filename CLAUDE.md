@@ -196,3 +196,7 @@ RGB-T crowd counting is directly applicable to **surveillance autonomy** (ORACLE
 ## Python: >= 3.10
 ## Torch: cu128 index
 ## Git prefix: [DEF-rgbtcc]
+
+## Reference Implementation
+Source code at: repositories/RGBT-Crowd-Counting/
+Read ALL files in repositories/RGBT-Crowd-Counting/ before building. This is the paper's reference implementation.
