@@ -1,0 +1,36 @@
+# DEF-rgbtcc Debug / Smoke Test Configuration
+# Quick test: python -m def_rgbtcc.train --config configs/debug.toml --max-steps 5
+
+[training]
+batch_size = 1
+epochs = 2
+learning_rate = 1e-5
+weight_decay = 1e-4
+crop_size = 224
+downsample_ratio = 8
+sigma = 8.0
+background_ratio = 0.15
+use_background = true
+seed = 3407
+max_grad_norm = 1.0
+warmup_ratio = 0.05
+min_lr = 1e-7
+precision = "fp32"
+
+[data]
+train_path = "/mnt/forge-data/datasets/RGBT-CC"
+pretrained_checkpoint = "/mnt/forge-data/models/rgbtcc/vgg19_features_imagenet.pth"
+num_workers = 2
+pin_memory = true
+
+[checkpoint]
+save_dir = "/mnt/artifacts-datai/checkpoints/DEF-rgbtcc-debug"
+save_every_n_steps = 3
+keep_top_k = 2
+metric = "game0"
+mode = "min"
+
+[early_stopping]
+enabled = false
+patience = 20
+min_delta = 0.001
