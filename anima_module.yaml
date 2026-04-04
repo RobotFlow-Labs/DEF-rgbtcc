@@ -1,0 +1,56 @@
+name: def-rgbtcc
+version: 0.1.0
+description: "Dual-Modulation Framework for RGB-T Crowd Counting"
+domain: defense
+wave: 8
+paper:
+  title: "A Dual-Modulation Framework for RGB-T Crowd Counting via Spatially Modulated Attention and Adaptive Fusion"
+  arxiv: "2509.17079"
+  authors: "Cht2924 et al."
+
+capabilities:
+  - rgb-t-crowd-counting
+  - density-map-estimation
+  - spatially-modulated-attention
+  - adaptive-cross-modal-fusion
+
+model:
+  architecture: "VGG-19 + SMA Transformer + ACMF"
+  parameters: "34.1M"
+  input_channels: 6  # 3 RGB + 3 Thermal
+  output: density_map
+  backbone: vgg19
+  input_size: [224, 224]
+
+api:
+  predict:
+    input:
+      rgb: "image/jpeg"
+      thermal: "image/jpeg"
+    output:
+      density_map: "numpy/float32"
+      count: "float"
+
+docker:
+  base_image: "anima-serve:jazzy"
+  gpu_required: true
+  min_vram_mb: 1024
+  serve_port: 8080
+
+ros2:
+  node_name: "def_rgbtcc_node"
+  subscriptions:
+    - topic: "/camera/rgb/image_raw"
+      type: "sensor_msgs/msg/Image"
+    - topic: "/camera/thermal/image_raw"
+      type: "sensor_msgs/msg/Image"
+  publications:
+    - topic: "/crowd/density_map"
+      type: "sensor_msgs/msg/Image"
+    - topic: "/crowd/count"
+      type: "std_msgs/msg/Float32"
+
+products:
+  - ORACLE  # surveillance autonomy
+  - ATLAS   # fleet AV perimeter safety
+  - NEMESIS # crowd-aware navigation

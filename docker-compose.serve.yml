@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  def-rgbtcc:
+    build:
+      context: .
+      dockerfile: Dockerfile.serve
+    image: anima-def-rgbtcc:latest
+    env_file: .env.serve
+    network_mode: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    volumes:
+      - /data/weights:/data/weights
+    profiles:
+      - serve
+      - ros2
+      - api
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.serve
+    command: python -m pytest tests/ -x -v
+    env_file: .env.serve
+    profiles:
+      - test
