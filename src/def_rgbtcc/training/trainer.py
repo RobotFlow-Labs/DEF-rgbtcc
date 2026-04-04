@@ -128,7 +128,7 @@ class RGBTCCTrainer:
         logger.info(f"[CONFIG] {cfg.get('config_path', 'inline')}")
         logger.info(f"[BATCH] batch_size={cfg['training']['batch_size']}")
         logger.info(f"[GPU] {torch.cuda.get_device_name(0)}, "
-                     f"{torch.cuda.get_device_properties(0).total_mem // 1024**2}MB")
+                     f"{torch.cuda.get_device_properties(0).total_memory // 1024**2}MB")
         logger.info(f"[TRAIN] {cfg['training']['epochs']} epochs, "
                      f"lr={cfg['training']['learning_rate']}, "
                      f"optimizer=Adam")
@@ -271,8 +271,9 @@ class RGBTCCTrainer:
         }
 
     def _log_metrics(self, metrics: dict):
+        clean = {k: float(v) if hasattr(v, '__float__') else v for k, v in metrics.items()}
         with open(self.metrics_path, "a") as f:
-            f.write(json.dumps(metrics) + "\n")
+            f.write(json.dumps(clean) + "\n")
 
     def train(self, max_steps: int | None = None):
         tcfg = self.cfg["training"]

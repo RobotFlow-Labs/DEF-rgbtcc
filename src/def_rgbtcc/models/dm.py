@@ -215,6 +215,9 @@ class Net(nn.Module):
 
     def forward(self, inputs: list[Tensor] | tuple[Tensor, Tensor]) -> Tensor:
         rgb, t = inputs
+        # Handle mismatched RGB/thermal sizes (some datasets have rotated thermal)
+        if rgb.shape != t.shape:
+            t = F.interpolate(t, size=rgb.shape[2:], mode="bilinear", align_corners=False)
         rgb_feat = self.features(rgb)
         t_feat = self.features(t)
         rgb_feat = self.transformer_encoder_rgb(rgb_feat)

@@ -6,9 +6,14 @@ import torch
 
 def eval_game(output: torch.Tensor, target, L: int = 0):
     output_np = output[0][0].cpu().numpy()
-    target_np = target[0] if isinstance(target, (list, tuple)) else target
-    if isinstance(target_np, torch.Tensor):
-        target_np = target_np.numpy()
+    if isinstance(target, torch.Tensor):
+        target_np = target.squeeze().cpu().numpy()
+    elif isinstance(target, np.ndarray):
+        target_np = target.squeeze()
+    else:
+        target_np = target[0]
+        if isinstance(target_np, torch.Tensor):
+            target_np = target_np.cpu().numpy()
     H, W = target_np.shape
     ratio = H / output_np.shape[0]
     output_np = cv2.resize(output_np, (W, H), interpolation=cv2.INTER_CUBIC) / (
@@ -31,7 +36,7 @@ def eval_game(output: torch.Tensor, target, L: int = 0):
 def eval_relative(output: torch.Tensor, target) -> float:
     output_num = output.cpu().data.sum().item()
     if isinstance(target, torch.Tensor):
-        target_num = target.sum().float().item()
+        target_num = target.cpu().sum().float().item()
     else:
         target_num = float(np.sum(target))
     if target_num == 0:

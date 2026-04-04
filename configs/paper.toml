@@ -3,7 +3,7 @@
 # Dataset: RGBT-CC
 
 [training]
-batch_size = 1
+batch_size = 80
 epochs = 400
 learning_rate = 1e-5
 weight_decay = 1e-4
