@@ -1,33 +1,37 @@
 # NEXT_STEPS — DEF-rgbtcc
 ## Last Updated: 2026-04-04
-## Status: PRD + TASKS FINALIZED, SCAFFOLD READY
-## MVP Readiness: 35%
+## Status: TRAINING IN PROGRESS
+## MVP Readiness: 85%
 
 ## Completed
 1. Full PRD finalized in `PRD.md`.
-2. Detailed task slices completed in `tasks/PRD-001.md` .. `tasks/PRD-010.md`.
-3. CUDA handoff operational scripts prepared in `scripts/server/`.
-4. Package scaffolding prepared in `src/def_rgbtcc/`.
+2. Package scaffolding in `src/def_rgbtcc/`.
+3. ANIMA training pipeline built:
+   - Model: VGG-19 + SMA Transformer + ACMF (34.1M params)
+   - Dataset: RGBT-CC loader (JSON GT format, 1030/200/800 train/val/test)
+   - Losses: Bayesian Loss + Posterior Probability
+   - Trainer: Config-driven, checkpointing, early stopping, warmup+cosine LR
+4. CUDA kernels compiled (sm_89): fused spatial distance decay + density blend
+5. RGBT-CC dataset downloaded (593MB, 2030 images)
+6. VGG-19 ImageNet pretrained weights loaded as backbone init
+7. Training configs: paper.toml (BS=80, 400 epochs) + debug.toml
+8. Docker serving infrastructure: Dockerfile.serve, docker-compose, anima_module.yaml
+9. Training launched on GPU 1 (L4, 72.6% VRAM utilization)
 
-## Immediate Execution Order
-1. `PRD-001`: bootstrap Python 3.11 environment on CUDA server.
-2. `PRD-002`: validate dataset/checkpoint contract.
-3. `PRD-005`: capture baseline benchmarks.
-4. `PRD-006`: profile and lock hotspot roadmap.
+## In Progress
+- Training 400 epochs on RGBT-CC (GPU 1)
+  - E0: GAME0=522.0
+  - E1: GAME0=398.3
+  - E2: GAME0=216.1 (rapid improvement)
 
-## Command Pack (CUDA server)
-```bash
-bash scripts/server/deploy_to_cuda_server.sh datai_srv7_development /mnt/forge-data/modules/wave-8/DEF-rgbtcc
-ssh datai_srv7_development
-bash /mnt/forge-data/modules/wave-8/DEF-rgbtcc/scripts/server/bootstrap_cuda_server.sh /mnt/forge-data/modules/wave-8/DEF-rgbtcc
-cd /mnt/forge-data/modules/wave-8/DEF-rgbtcc
-source .venv/bin/activate
-python scripts/server/validate_assets.py --dataset-root /mnt/forge-data/datasets/RGB-T-CC/RGBT-CC --checkpoint /mnt/forge-data/models/rgbtcc/vgg_vit_depth_2_head_6.pth
-python scripts/server/validate_cuda_runtime.py --checkpoint /mnt/forge-data/models/rgbtcc/vgg_vit_depth_2_head_6.pth
-bash scripts/server/run_benchmark_suite.sh /mnt/forge-data/modules/wave-8/DEF-rgbtcc /mnt/forge-data/models/rgbtcc/vgg_vit_depth_2_head_6.pth
-```
+## Remaining
+1. Wait for training to complete (~2h remaining)
+2. Export pipeline: pth → safetensors → ONNX → TRT FP16 → TRT FP32
+3. Push to HuggingFace: ilessio-aiflowlab/DEF-rgbtcc
+4. Final git commits + push
 
-## Open Blockers
-1. Final checkpoint path must be confirmed.
-2. Dataset mount paths must be validated on server.
-3. Kernel implementation work starts after profiling lock.
+## Notes
+- Original paper pretrained weights (vgg_vit_depth_2_head_6.pth) not publicly released
+- Using VGG-19 ImageNet features as backbone initialization instead
+- Dataset GT format is JSON (not NPY as stated in original CLAUDE.md)
+- Some thermal images are rotated 90° relative to RGB — handled in model forward pass

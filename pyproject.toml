@@ -5,12 +5,30 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "def-rgbtcc"
 version = "0.1.0"
-description = "ANIMA DEF-rgbtcc scaffolding package for RGB-T crowd counting"
+description = "Dual-Modulation Framework for RGB-T Crowd Counting (ANIMA Defense Module)"
 requires-python = ">=3.11"
 dependencies = [
   "numpy>=1.26",
   "torch>=2.2",
+  "torchvision>=0.17",
+  "opencv-python-headless>=4.8",
+  "pillow>=10.0",
+  "scipy>=1.11",
+  "tqdm>=4.65",
+  "toml>=0.10",
+  "safetensors>=0.4",
+  "onnx>=1.14",
 ]
+
+[project.optional-dependencies]
+dev = ["thop", "ruff"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.uv]
+extra-index-url = ["https://download.pytorch.org/whl/cu128"]
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "I", "B", "UP", "N", "C4"]
