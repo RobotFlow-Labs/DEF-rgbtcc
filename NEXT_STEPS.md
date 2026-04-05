@@ -1,37 +1,26 @@
 # NEXT_STEPS — DEF-rgbtcc
-## Last Updated: 2026-04-04
-## Status: TRAINING IN PROGRESS
-## MVP Readiness: 85%
+## Last Updated: 2026-04-05
+## Status: TRAINING COMPLETE, EXPORTED, PUSHED
+## MVP Readiness: 95%
+
+## Results
+- **Best GAME0 = 33.96** (epoch 15)
+- **Best GAME3 = 73.97** (epoch 43)
+- Early stopped at epoch 51/400 (patience=40)
+- GPU 1 (L4), BS=80, 72.6% VRAM utilization
 
 ## Completed
-1. Full PRD finalized in `PRD.md`.
-2. Package scaffolding in `src/def_rgbtcc/`.
-3. ANIMA training pipeline built:
-   - Model: VGG-19 + SMA Transformer + ACMF (34.1M params)
-   - Dataset: RGBT-CC loader (JSON GT format, 1030/200/800 train/val/test)
-   - Losses: Bayesian Loss + Posterior Probability
-   - Trainer: Config-driven, checkpointing, early stopping, warmup+cosine LR
-4. CUDA kernels compiled (sm_89): fused spatial distance decay + density blend
-5. RGBT-CC dataset downloaded (593MB, 2030 images)
-6. VGG-19 ImageNet pretrained weights loaded as backbone init
-7. Training configs: paper.toml (BS=80, 400 epochs) + debug.toml
-8. Docker serving infrastructure: Dockerfile.serve, docker-compose, anima_module.yaml
-9. Training launched on GPU 1 (L4, 72.6% VRAM utilization)
-
-## In Progress
-- Training 400 epochs on RGBT-CC (GPU 1)
-  - E0: GAME0=522.0
-  - E1: GAME0=398.3
-  - E2: GAME0=216.1 (rapid improvement)
+1. Full ANIMA training pipeline (config-driven, checkpointing, early stopping)
+2. CUDA kernels compiled (sm_89): fused spatial distance decay + density blend
+3. RGBT-CC dataset (2030 images, JSON GT format)
+4. VGG-19 ImageNet pretrained backbone
+5. Training: 51 epochs, early stopped (GAME0 converged at epoch 15)
+6. Export: pth + safetensors + ONNX + TRT FP16 + TRT FP32
+7. Pushed to HuggingFace: https://huggingface.co/ilessio-aiflowlab/DEF-rgbtcc
+8. Docker serving infrastructure
+9. 6 focused git commits pushed to main
 
 ## Remaining
-1. Wait for training to complete (~2h remaining)
-2. Export pipeline: pth → safetensors → ONNX → TRT FP16 → TRT FP32
-3. Push to HuggingFace: ilessio-aiflowlab/DEF-rgbtcc
-4. Final git commits + push
-
-## Notes
-- Original paper pretrained weights (vgg_vit_depth_2_head_6.pth) not publicly released
-- Using VGG-19 ImageNet features as backbone initialization instead
-- Dataset GT format is JSON (not NPY as stated in original CLAUDE.md)
-- Some thermal images are rotated 90° relative to RGB — handled in model forward pass
+1. DroneRGBT evaluation (if dataset becomes available)
+2. MLX port (Apple Silicon)
+3. Dual-compute validation (CUDA vs MLX)
